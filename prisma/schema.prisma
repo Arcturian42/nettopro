@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Account {
@@ -100,7 +99,6 @@ model Company {
   @@index([region])
   @@index([status])
   @@index([isClaimed])
-  @@index([categories])
 }
 
 model Category {

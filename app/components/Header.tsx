@@ -50,11 +50,14 @@ export function Header() {
 
           {/* Mobile Menu */}
           <Sheet>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
+            <SheetTrigger
+              className="md:hidden"
+              render={
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              }
+            />
             <SheetContent side="right">
               <nav className="flex flex-col gap-4 mt-8">
                 {navigation.map((item) => (
