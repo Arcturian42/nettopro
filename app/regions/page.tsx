@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { MapPin } from "lucide-react";
 import { Region, REGION_LABELS } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Entreprises de nettoyage par région | NettoPro",
   description: "Trouvez des prestataires de nettoyage professionnel dans votre région. Annuaire complet par région française.",

@@ -6,6 +6,8 @@ import { CompanyCard } from "@/app/annuaire/components/CompanyCard";
 import { Badge } from "@/components/ui/badge";
 import { Region, REGION_LABELS } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 const SLUG_TO_REGION: Record<string, Region> = {
   "auvergne-rhone-alpes": "AUVERGNE_RHONE_ALPES",
   "bourgogne-franche-comte": "BOURGOGNE_FRANCHE_COMTE",

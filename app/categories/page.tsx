@@ -14,6 +14,8 @@ import {
   Car
 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Catégories de nettoyage professionnel | NettoPro",
   description: "Explorez les différentes catégories de nettoyage professionnel : bureaux, milieu médical, industrie, chantier, transport, événementiel...",

@@ -6,6 +6,8 @@ import { CompanyCard } from "@/app/annuaire/components/CompanyCard";
 import { Badge } from "@/components/ui/badge";
 import { REGION_LABELS } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 interface CategoryPageProps {
   params: {
     slug: string;
