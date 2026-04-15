@@ -1,32 +1,26 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { PrismaClient } from "@prisma/client";
 
-// Dynamic adapter loading - only load PrismaAdapter when DATABASE_URL is available
-function getAdapter(): any {
-  if (!process.env.DATABASE_URL) {
-    return undefined;
+const globalForPrismaAuth = globalThis as unknown as {
+  prismaAuth: PrismaClient | undefined;
+};
+
+function getPrismaClient(): PrismaClient {
+  if (globalForPrismaAuth.prismaAuth) {
+    return globalForPrismaAuth.prismaAuth;
   }
   
-  try {
-    const { PrismaAdapter } = require("@next-auth/prisma-adapter");
-    const { PrismaClient } = require("@prisma/client");
-    
-    const globalForPrismaAuth = globalThis as unknown as {
-      prismaAuth: any;
-    };
-    
-    if (!globalForPrismaAuth.prismaAuth) {
-      globalForPrismaAuth.prismaAuth = new PrismaClient();
-    }
-    
-    return PrismaAdapter(globalForPrismaAuth.prismaAuth);
-  } catch {
-    return undefined;
+  const client = new PrismaClient();
+  if (process.env.NODE_ENV !== "production") {
+    globalForPrismaAuth.prismaAuth = client;
   }
+  return client;
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: getAdapter(),
+  adapter: PrismaAdapter(getPrismaClient()),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
@@ -47,6 +41,6 @@ export const authOptions: NextAuthOptions = {
     error: "/connexion",
   },
   session: {
-    strategy: "jwt",
+    strategy: "database",
   },
 };
