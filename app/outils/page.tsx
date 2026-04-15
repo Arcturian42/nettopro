@@ -31,11 +31,11 @@ const tools = [
   {
     id: "calculateur-aides",
     title: "Calculateur global d'aides",
-    description: "Un simulateur complet qui regroupe toutes les aides disponibles pour les entreprises : CEE, Prime Rénov', MaPrimeAdapt', et plus encore.",
+    description: "Un simulateur complet qui regroupe toutes les aides disponibles : Prime Rénov' + CEE en une seule estimation. Le calcul le plus complet disponible.",
     icon: Euro,
-    href: "#",
+    href: "/outils/calculateur-aides",
     color: "bg-amber-500/10 text-amber-600",
-    available: false,
+    available: true,
   },
 ];
 
