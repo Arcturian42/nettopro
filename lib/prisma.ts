@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import type { PrismaClient } from '@prisma/client';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -16,7 +14,7 @@ const createMockPrismaClient = (): PrismaClient => {
 };
 
 // Create Prisma client with pg adapter for PostgreSQL
-const createPrismaClient = (): PrismaClient => {
+function createPrismaClient(): PrismaClient {
   if (!process.env.DATABASE_URL) {
     // During build time or without DATABASE_URL, return a mock client
     console.warn('DATABASE_URL not set, using mock Prisma client');
@@ -24,13 +22,18 @@ const createPrismaClient = (): PrismaClient => {
   }
 
   try {
+    // Dynamic require to avoid loading during build
+    const { PrismaClient: PrismaClientCtor } = require('@prisma/client');
+    const { PrismaPg } = require('@prisma/adapter-pg');
+    const { Pool } = require('pg');
+
     const pool = new Pool({
       connectionString: process.env.DATABASE_URL,
     });
 
     const adapter = new PrismaPg(pool);
     
-    return new PrismaClient({
+    return new PrismaClientCtor({
       adapter,
       log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
     });
@@ -38,7 +41,7 @@ const createPrismaClient = (): PrismaClient => {
     console.error('Failed to create Prisma client:', error);
     return createMockPrismaClient();
   }
-};
+}
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
