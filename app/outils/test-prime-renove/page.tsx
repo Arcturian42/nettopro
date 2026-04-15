@@ -88,9 +88,10 @@ export default function SimulateurPrimeRenov() {
     for (const work of travaux) {
       const bareme = BAREMES[work];
       if (bareme) {
+        const rate = bareme[incomeBracket as 'blue' | 'yellow' | 'purple'];
         const amount = work.includes("isolation") || work === "menuiserie"
-          ? bareme[incomeBracket as keyof typeof bareme] * surfaceNum * 0.3 // 30% de la surface
-          : bareme[incomeBracket as keyof typeof bareme];
+          ? rate * surfaceNum * 0.3 // 30% de la surface
+          : rate;
         total += amount;
         const option = travauxOptions.find((t) => t.id === work);
         details.push({
