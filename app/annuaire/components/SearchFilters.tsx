@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -34,19 +35,17 @@ const regions = Object.entries(REGION_LABELS).map(([value, label]) => ({
   label,
 }));
 
-const categories = [
-  { value: "bureaux", label: "Bureaux & Coworking" },
-  { value: "medical", label: "Milieu médical" },
-  { value: "industrie", label: "Industrie & Entrepôts" },
-  { value: "chantier", label: "Chantier & BTP" },
-  { value: "transport", label: "Transport & Véhicules" },
-  { value: "evenementiel", label: "Événementiel" },
-  { value: "copropriete", label: "Copropriété" },
-  { value: "restauration", label: "Restauration" },
-  { value: "automobile", label: "Automobile" },
-];
+interface Category {
+  slug: string;
+  name: string;
+}
 
-export function SearchFilters() {
+interface SearchFiltersProps {
+  categories: Category[];
+}
+
+// Inner component that uses useSearchParams
+function SearchFiltersContent({ categories }: SearchFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -99,8 +98,8 @@ export function SearchFilters() {
           <SelectContent>
             <SelectItem value="all">Toutes les catégories</SelectItem>
             {categories.map((cat) => (
-              <SelectItem key={cat.value} value={cat.value}>
-                {cat.label}
+              <SelectItem key={cat.slug} value={cat.slug}>
+                {cat.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -111,5 +110,28 @@ export function SearchFilters() {
         </Button>
       </div>
     </form>
+  );
+}
+
+// Loading fallback
+function SearchFiltersSkeleton() {
+  return (
+    <div className="bg-card border rounded-lg p-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="h-10 bg-muted rounded animate-pulse" />
+        <div className="h-10 bg-muted rounded animate-pulse" />
+        <div className="h-10 bg-muted rounded animate-pulse" />
+        <div className="h-10 bg-muted rounded animate-pulse" />
+      </div>
+    </div>
+  );
+}
+
+// Exported component with Suspense wrapper
+export function SearchFilters({ categories }: SearchFiltersProps) {
+  return (
+    <Suspense fallback={<SearchFiltersSkeleton />}>
+      <SearchFiltersContent categories={categories} />
+    </Suspense>
   );
 }

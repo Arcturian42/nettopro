@@ -11,6 +11,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/outils/prime-renove",
+        destination: "/outils/test-prime-renove",
+        permanent: true,
+      },
+      {
+        source: "/outils/cee",
+        destination: "/outils/test-cee",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

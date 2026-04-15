@@ -95,6 +95,7 @@ model Company {
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
   user              User?            @relation(fields: [claimedBy], references: [id])
+  leads             Lead[]
 
   @@index([region])
   @@index([status])
@@ -185,4 +186,59 @@ enum ArticleStatus {
   DRAFT
   PUBLISHED
   ARCHIVED
+}
+
+model Lead {
+  id          String     @id @default(cuid())
+  companyId   String
+  company     Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  // Contact info
+  firstName   String
+  lastName    String
+  email       String
+  phone       String?
+  
+  // Project details
+  projectType String[]   // Type de travaux (isolation, pompe à chaleur, etc.)
+  surface     Int?       // Surface en m²
+  postalCode  String
+  city        String?
+  description String?    @db.Text
+  
+  // Budget & Timing
+  budgetRange String?    // "5-10k", "10-20k", "20-50k", "50k+"
+  timing      String?    // "urgent", "3-mois", "6-mois", "1-an"
+  
+  // Lead status
+  status      LeadStatus @default(NEW)
+  source      LeadSource @default(WEBSITE)
+  notes       String?    @db.Text
+  
+  // Tracking
+  viewedAt    DateTime?
+  contactedAt DateTime?
+  convertedAt DateTime?
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([companyId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum LeadStatus {
+  NEW         // Nouveau lead non vu
+  VIEWED      // Consulté par l'entreprise
+  CONTACTED   // Contacté par l'entreprise
+  CONVERTED   // Devenu client
+  LOST        // Perdu
+}
+
+enum LeadSource {
+  WEBSITE     // Formulaire site
+  WIDGET      // Widget intégré
+  PHONE       // Appel téléphonique
+  REFERRAL    // Parrainage
 }

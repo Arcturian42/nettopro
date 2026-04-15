@@ -28,6 +28,12 @@ export default async function AnnuairePage({ searchParams }: SearchPageProps) {
   const page = parseInt(searchParams.page || "1", 10);
   const skip = (page - 1) * ITEMS_PER_PAGE;
 
+  // Fetch categories for the filter
+  const categories = await prisma.category.findMany({
+    orderBy: { name: 'asc' },
+    select: { slug: true, name: true },
+  });
+
   const where: any = {
     status: "ACTIVE",
   };
@@ -87,7 +93,7 @@ export default async function AnnuairePage({ searchParams }: SearchPageProps) {
         </p>
       </div>
 
-      <SearchFilters />
+      <SearchFilters categories={categories} />
 
       <div className="mt-8 space-y-4">
         {companies.length === 0 ? (
