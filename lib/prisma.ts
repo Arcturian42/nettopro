@@ -11,11 +11,16 @@ function createPrismaClient(): PrismaClient {
     throw new Error('DATABASE_URL environment variable is not set');
   }
 
+  // Ensure SSL is configured for Supabase
+  const connectionString = process.env.DATABASE_URL;
+  const isSupabase = connectionString.includes('supabase');
+
   const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false, // Required for Supabase
-    },
+    connectionString,
+    ssl: isSupabase ? { rejectUnauthorized: false } : undefined,
+    max: 10, // Limit pool size for serverless
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
   });
 
   const adapter = new PrismaPg(pool);
@@ -27,15 +32,12 @@ function createPrismaClient(): PrismaClient {
 }
 
 export function getPrismaClient(): PrismaClient {
-  // Return existing global instance
   if (globalForPrisma.prisma) {
     return globalForPrisma.prisma;
   }
 
-  // Create new instance
   const prisma = createPrismaClient();
 
-  // Cache in development for hot reload
   if (process.env.NODE_ENV !== 'production') {
     globalForPrisma.prisma = prisma;
   }
@@ -43,6 +45,5 @@ export function getPrismaClient(): PrismaClient {
   return prisma;
 }
 
-// Backward compatibility - but will throw if DATABASE_URL not set
 export const prisma = globalForPrisma.prisma ?? getPrismaClient();
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
