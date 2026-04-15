@@ -18,6 +18,7 @@ interface CompanyPageProps {
 }
 
 export async function generateMetadata({ params }: CompanyPageProps): Promise<Metadata> {
+  const prisma = getPrismaClient();
   const company = await prisma.company.findUnique({
     where: { slug: params.slug },
     include: { categories: true },

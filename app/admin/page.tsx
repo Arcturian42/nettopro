@@ -8,6 +8,7 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 async function getStats() {
+  const prisma = getPrismaClient();
   const [
     totalCompanies,
     pendingCompanies,
@@ -34,7 +35,6 @@ async function getStats() {
 }
 
 export default async function AdminPage() {
-  const prisma = getPrismaClient();
   const stats = await getStats();
 
   const statCards = [

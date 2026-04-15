@@ -15,6 +15,7 @@ interface CategoryPageProps {
 }
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
+  const prisma = getPrismaClient();
   const category = await prisma.category.findUnique({
     where: { slug: params.slug },
   });
