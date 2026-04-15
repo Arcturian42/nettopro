@@ -1,13 +1,10 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaNeon } from '@prisma/adapter-neon';
-import { neonConfig, Pool } from '@neondatabase/serverless';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
-
-// Configure neon for serverless environment
-neonConfig.fetchConnectionCache = true;
 
 function createPrismaClient(): PrismaClient {
   if (!process.env.DATABASE_URL) {
@@ -16,9 +13,12 @@ function createPrismaClient(): PrismaClient {
 
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false, // Required for Supabase
+    },
   });
 
-  const adapter = new PrismaNeon(pool as any);
+  const adapter = new PrismaPg(pool);
   
   return new PrismaClient({
     adapter,
