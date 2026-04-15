@@ -20,18 +20,18 @@ export default function NotFound() {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg">
-              <Link href="/">
+            <Link href="/">
+              <Button size="lg">
                 <Home className="mr-2 h-4 w-4" />
                 Retour à l&apos;accueil
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link href="/annuaire">
+              </Button>
+            </Link>
+            <Link href="/annuaire">
+              <Button variant="outline" size="lg">
                 <Search className="mr-2 h-4 w-4" />
                 Explorer l&apos;annuaire
-              </Link>
-            </Button>
+              </Button>
+            </Link>
           </div>
 
           {/* Back Link */}
