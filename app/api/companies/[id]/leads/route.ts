@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { prisma } from '@/lib/prisma'
 import { authOptions } from '@/lib/auth'
+import { LeadStatus } from '@prisma/client'
 
 // GET: Lister les leads d'une entreprise
 export async function GET(
@@ -36,9 +37,15 @@ export async function GET(
   }
 
   const { searchParams } = new URL(request.url)
-  const status = searchParams.get('status')
+  const statusParam = searchParams.get('status')
   const limit = parseInt(searchParams.get('limit') || '50')
   const offset = parseInt(searchParams.get('offset') || '0')
+
+  // Validate status is a valid LeadStatus
+  const validStatuses: LeadStatus[] = ['NEW', 'VIEWED', 'CONTACTED', 'CONVERTED', 'LOST']
+  const status = statusParam && validStatuses.includes(statusParam as LeadStatus) 
+    ? statusParam as LeadStatus 
+    : undefined
 
   const where = {
     companyId: id,
