@@ -1,7 +1,12 @@
-import { prisma } from "@/lib/prisma";
 import { Building2, MapPin, Tags } from "lucide-react";
 
+// Force dynamic to avoid DB connection at build time
+export const dynamic = "force-dynamic";
+
 export async function Stats() {
+  // Dynamic import to avoid loading Prisma at build time
+  const { prisma } = await import("@/lib/prisma");
+  
   const [companyCount, categoryCount, regionCount] = await Promise.all([
     prisma.company.count({ where: { status: "ACTIVE" } }),
     prisma.category.count(),
