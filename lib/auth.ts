@@ -27,4 +27,16 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "database",
   },
+  debug: true, // Active le debug
+  logger: {
+    error: (code, metadata) => {
+      console.error("[NextAuth Error]", code, metadata);
+    },
+    warn: (code) => {
+      console.warn("[NextAuth Warn]", code);
+    },
+    debug: (code, metadata) => {
+      console.log("[NextAuth Debug]", code, metadata);
+    },
+  },
 };
