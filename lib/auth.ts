@@ -1,42 +1,32 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
 
-// Create a separate Prisma client for NextAuth (without adapter pattern)
-// This avoids conflicts with Prisma 7's adapter pattern used in lib/prisma.ts
-const globalForPrismaAuth = globalThis as unknown as {
-  prismaAuth: PrismaClient | undefined;
-};
-
-// Lazy init for Prisma client - only create when needed
-// This prevents build-time errors when DATABASE_URL is not available
-function getPrismaAuth(): PrismaClient {
-  if (globalForPrismaAuth.prismaAuth) {
-    return globalForPrismaAuth.prismaAuth;
-  }
-  
-  // During build, create a minimal mock if no DATABASE_URL
+// Dynamic adapter loading - only load PrismaAdapter when DATABASE_URL is available
+function getAdapter(): any {
   if (!process.env.DATABASE_URL) {
-    // Build-time mock - returns empty arrays for all query methods
-    return new Proxy({} as PrismaClient, {
-      get: () => () => Promise.resolve([]),
-    });
+    return undefined;
   }
   
-  const client = new PrismaClient();
-  if (process.env.NODE_ENV !== "production") {
-    globalForPrismaAuth.prismaAuth = client;
+  try {
+    const { PrismaAdapter } = require("@next-auth/prisma-adapter");
+    const { PrismaClient } = require("@prisma/client");
+    
+    const globalForPrismaAuth = globalThis as unknown as {
+      prismaAuth: any;
+    };
+    
+    if (!globalForPrismaAuth.prismaAuth) {
+      globalForPrismaAuth.prismaAuth = new PrismaClient();
+    }
+    
+    return PrismaAdapter(globalForPrismaAuth.prismaAuth);
+  } catch {
+    return undefined;
   }
-  return client;
 }
 
-// Use a getter for lazy evaluation during build
-const prismaAuth = () => getPrismaAuth();
-
 export const authOptions: NextAuthOptions = {
-  // Only use adapter when DATABASE_URL is available
-  adapter: process.env.DATABASE_URL ? PrismaAdapter(getPrismaAuth()) : undefined,
+  adapter: getAdapter(),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
@@ -57,6 +47,6 @@ export const authOptions: NextAuthOptions = {
     error: "/connexion",
   },
   session: {
-    strategy: "database",
+    strategy: "jwt",
   },
 };
