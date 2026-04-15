@@ -70,12 +70,12 @@ export default function OutilsPage() {
               </CardHeader>
               <CardContent className="mt-auto">
                 {tool.available ? (
-                  <Button asChild className="w-full">
-                    <Link href={tool.href}>
+                  <Link href={tool.href} className="w-full">
+                    <Button className="w-full">
                       Lancer le simulateur
                       <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
+                    </Button>
+                  </Link>
                 ) : (
                   <Button disabled className="w-full" variant="outline">
                     <Sparkles className="mr-2 h-4 w-4" />
@@ -116,12 +116,12 @@ export default function OutilsPage() {
         <p className="text-muted-foreground mb-4">
           Besoin d&apos;aide pour vos travaux de nettoyage ou rénovation ?
         </p>
-        <Button asChild variant="outline" size="lg">
-          <Link href="/annuaire">
+        <Link href="/annuaire">
+          <Button variant="outline" size="lg">
             Trouver un prestataire
             <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       </div>
     </div>
   );
