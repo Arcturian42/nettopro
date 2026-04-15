@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getPrismaClient } from "@/lib/prisma";
 
 export async function PUT(req: Request) {
+  const prisma = getPrismaClient();
   try {
     const session = await getServerSession(authOptions);
 
@@ -50,6 +51,7 @@ export async function PUT(req: Request) {
 }
 
 export async function GET() {
+  const prisma = getPrismaClient();
   try {
     const session = await getServerSession(authOptions);
 

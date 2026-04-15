@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { getPrismaClient } from "@/lib/prisma";
 import { CompanyHeader } from "./components/CompanyHeader";
 import { CompanyInfo } from "./components/CompanyInfo";
 import { ContactSection } from "./components/ContactSection";
@@ -36,6 +36,7 @@ export async function generateMetadata({ params }: CompanyPageProps): Promise<Me
 }
 
 export default async function CompanyPage({ params }: CompanyPageProps) {
+  const prisma = getPrismaClient();
   const company = await prisma.company.findUnique({
     where: { slug: params.slug },
     include: {

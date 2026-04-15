@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { getPrismaClient } from "@/lib/prisma";
 import { CompanyCard } from "@/app/annuaire/components/CompanyCard";
 import { Badge } from "@/components/ui/badge";
 import { REGION_LABELS } from "@/types";
@@ -30,6 +30,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
+  const prisma = getPrismaClient();
   const category = await prisma.category.findUnique({
     where: { slug: params.slug },
   });

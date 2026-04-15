@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { getPrismaClient } from "@/lib/prisma";
 import { CompanyCard } from "@/app/annuaire/components/CompanyCard";
 import { Badge } from "@/components/ui/badge";
 import { Region, REGION_LABELS } from "@/types";
@@ -41,6 +41,7 @@ export async function generateMetadata({ params }: RegionPageProps): Promise<Met
 }
 
 export default async function RegionPage({ params }: RegionPageProps) {
+  const prisma = getPrismaClient();
   const region = SLUG_TO_REGION[params.slug];
   
   if (!region) {

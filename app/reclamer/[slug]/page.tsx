@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getPrismaClient } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { ClaimForm } from "./components/ClaimForm";
 
@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: ClaimPageProps): Promise<Meta
 }
 
 export default async function ClaimPage({ params }: ClaimPageProps) {
+  const prisma = getPrismaClient();
   const session = await getServerSession(authOptions);
 
   if (!session) {

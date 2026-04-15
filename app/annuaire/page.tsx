@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { prisma } from "@/lib/prisma";
+import { getPrismaClient } from "@/lib/prisma";
 import { CompanyCard } from "./components/CompanyCard";
 import { SearchFilters } from "./components/SearchFilters";
 import { Pagination } from "./components/Pagination";
@@ -25,6 +25,7 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function AnnuairePage({ searchParams }: SearchPageProps) {
+  const prisma = getPrismaClient();
   const page = parseInt(searchParams.page || "1", 10);
   const skip = (page - 1) * ITEMS_PER_PAGE;
 

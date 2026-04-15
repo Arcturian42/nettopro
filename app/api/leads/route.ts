@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { prisma } from '@/lib/prisma'
+import { getPrismaClient } from "@/lib/prisma";
 
 const leadSchema = z.object({
   companyId: z.string(),
@@ -20,6 +20,7 @@ const leadSchema = z.object({
 
 // POST: Créer un nouveau lead
 export async function POST(request: NextRequest) {
+  const prisma = getPrismaClient();
   try {
     const body = await request.json()
     const validated = leadSchema.parse(body)

@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { prisma } from "@/lib/prisma";
+import { getPrismaClient } from "@/lib/prisma";
 import { MapPin } from "lucide-react";
 import { Region, REGION_LABELS } from "@/types";
 
@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RegionsPage() {
+  const prisma = getPrismaClient();
   // Get company counts by region
   const companiesByRegion = await prisma.company.groupBy({
     by: ["region"],

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getPrismaClient } from "@/lib/prisma";
 import { slugify } from "@/lib/slugify";
 
 // This endpoint fixes slugs with missing accents (rnovation -> renovation)
 export async function POST(req: NextRequest) {
+  const prisma = getPrismaClient();
   // Simple auth check - in production use proper admin auth
   const authHeader = req.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.ADMIN_SECRET}`) {

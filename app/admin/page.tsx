@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getPrismaClient } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Building2, FileText, Users, Eye, AlertCircle } from "lucide-react";
@@ -34,6 +34,7 @@ async function getStats() {
 }
 
 export default async function AdminPage() {
+  const prisma = getPrismaClient();
   const stats = await getStats();
 
   const statCards = [

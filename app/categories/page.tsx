@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { prisma } from "@/lib/prisma";
+import { getPrismaClient } from "@/lib/prisma";
 import { 
   Building2, 
   Stethoscope, 
@@ -34,6 +34,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export default async function CategoriesPage() {
+  const prisma = getPrismaClient();
   const categories = await prisma.category.findMany({
     include: {
       _count: {

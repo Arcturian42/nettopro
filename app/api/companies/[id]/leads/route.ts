@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
-import { prisma } from '@/lib/prisma'
+import { getPrismaClient } from "@/lib/prisma";
 import { authOptions } from '@/lib/auth'
 import { LeadStatus } from '@prisma/client'
 
@@ -9,6 +9,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const prisma = getPrismaClient();
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
@@ -80,6 +81,7 @@ export async function GET(
 
 // GET: Stats leads
 export async function HEAD(request: NextRequest) {
+  const prisma = getPrismaClient();
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })

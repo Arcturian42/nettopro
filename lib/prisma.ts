@@ -1,34 +1,21 @@
-import type { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-// Check if we're in Next.js build data collection phase
-const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build' || 
-                     process.env.VERCEL_ENV === 'production' && !process.env.VERCEL_URL;
-
-// Create a mock PrismaClient that returns empty data for build phase
-function createMockPrismaClient(): PrismaClient {
-  const handler = {
-    get() {
-      return () => Promise.resolve([]);
-    },
-  };
-  return new Proxy({} as PrismaClient, handler);
-}
-
-function createPrismaClient(): PrismaClient {
-  // During build phase, return a mock client
-  if (isBuildPhase || !process.env.DATABASE_URL) {
-    console.log('[Prisma] Using mock client for build phase');
-    return createMockPrismaClient();
+export function getPrismaClient(): PrismaClient {
+  // Return existing global instance
+  if (globalForPrisma.prisma) {
+    return globalForPrisma.prisma;
   }
 
-  // Runtime client with adapter
-  const { PrismaPg } = require('@prisma/adapter-pg');
-  const { Pool } = require('pg');
-  const { PrismaClient: PrismaClientCtor } = require('@prisma/client');
+  // Create new instance
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL environment variable is not set');
+  }
 
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -36,12 +23,19 @@ function createPrismaClient(): PrismaClient {
 
   const adapter = new PrismaPg(pool);
   
-  return new PrismaClientCtor({
+  const prisma = new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
+
+  // Cache in development for hot reload
+  if (process.env.NODE_ENV !== 'production') {
+    globalForPrisma.prisma = prisma;
+  }
+
+  return prisma;
 }
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
-
+// Backward compatibility - but will throw if DATABASE_URL not set
+export const prisma = globalForPrisma.prisma ?? getPrismaClient();
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
