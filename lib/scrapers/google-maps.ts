@@ -53,7 +53,7 @@ export async function searchGoogleMaps(
 
     const data = await response.json()
     
-    return (data.results || []).map((place: Record<string, unknown>) => ({
+    return (data.results || []).map((place: any) => ({
       placeId: place.place_id,
       name: place.name,
       address: place.formatted_address,
@@ -103,13 +103,13 @@ export async function getPlaceDetails(
       reviewCount: place.user_ratings_total,
       latitude: place.geometry?.location?.lat,
       longitude: place.geometry?.location?.lng,
-      reviews: place.reviews?.map((r: Record<string, unknown>) => ({
+      reviews: place.reviews?.map((r: any) => ({
         author: r.author_name,
         rating: r.rating,
         text: r.text,
         date: r.relative_time_description,
       })),
-      photos: place.photos?.map((p: Record<string, unknown>) =>
+      photos: place.photos?.map((p: any) =>
         `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${p.photo_reference}&key=${apiKey}`
       ),
       openingHours: place.opening_hours?.weekday_text,
