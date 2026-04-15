@@ -24,7 +24,7 @@ export function RegisterForm() {
         <Button
           variant="outline"
           className="w-full"
-          onClick={() => signIn("google", { callbackUrl: "/tableau-de-bord" })}
+          onClick={() => signIn("google", { callbackUrl: "/inscription/success" })}
         >
           <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
             <path
