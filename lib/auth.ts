@@ -11,15 +11,17 @@ const globalForPrismaAuth = globalThis as unknown as {
 
 // Lazy init for Prisma client - only create when needed
 // This prevents build-time errors when DATABASE_URL is not available
-function getPrismaAuth() {
+function getPrismaAuth(): PrismaClient {
   if (globalForPrismaAuth.prismaAuth) {
     return globalForPrismaAuth.prismaAuth;
   }
   
-  // During build, return a mock if no DATABASE_URL
-  if (!process.env.DATABASE_URL && process.env.VERCEL_ENV === 'production') {
-    // This is a build-time mock - auth won't work without DB
-    return {} as PrismaClient;
+  // During build, create a minimal mock if no DATABASE_URL
+  if (!process.env.DATABASE_URL) {
+    // Build-time mock - returns empty arrays for all query methods
+    return new Proxy({} as PrismaClient, {
+      get: () => () => Promise.resolve([]),
+    });
   }
   
   const client = new PrismaClient();
@@ -29,10 +31,12 @@ function getPrismaAuth() {
   return client;
 }
 
-const prismaAuth = getPrismaAuth();
+// Use a getter for lazy evaluation during build
+const prismaAuth = () => getPrismaAuth();
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prismaAuth),
+  // Only use adapter when DATABASE_URL is available
+  adapter: process.env.DATABASE_URL ? PrismaAdapter(getPrismaAuth()) : undefined,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
