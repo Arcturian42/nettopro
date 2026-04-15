@@ -18,7 +18,7 @@ function createPrismaClient(): PrismaClient {
     connectionString: process.env.DATABASE_URL,
   });
 
-  const adapter = new PrismaNeon(pool);
+  const adapter = new PrismaNeon(pool as any);
   
   return new PrismaClient({
     adapter,
