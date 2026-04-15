@@ -7,39 +7,34 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient(): PrismaClient {
-  console.log('[Prisma] Creating client, DATABASE_URL exists:', !!process.env.DATABASE_URL);
-  
   if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL environment variable is not set');
   }
 
-  try {
-    const connectionString = process.env.DATABASE_URL;
-    const isSupabase = connectionString.includes('supabase');
+  const connectionString = process.env.DATABASE_URL;
+  
+  // Utiliser le Transaction Pooler de Supabase si disponible (port 6543)
+  // Sinon utiliser la connexion directe avec SSL
+  const isSupabase = connectionString.includes('supabase');
+  
+  // Configuration pour Vercel serverless - connexion courte
+  const pool = new Pool({
+    connectionString,
+    ssl: isSupabase ? { rejectUnauthorized: false } : undefined,
+    max: 1, // Une seule connexion pour serverless
+    idleTimeoutMillis: 5000, // Ferme rapidement
+    connectionTimeoutMillis: 5000,
+    keepAlive: false, // Pas de keepalive sur Vercel
+  });
 
-    console.log('[Prisma] Using connection to:', connectionString.split('@')[1]?.split('/')[0] || 'unknown');
+  const adapter = new PrismaPg(pool);
+  
+  const client = new PrismaClient({
+    adapter,
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  });
 
-    const pool = new Pool({
-      connectionString,
-      ssl: isSupabase ? { rejectUnauthorized: false } : undefined,
-      max: 10,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 10000,
-    });
-
-    const adapter = new PrismaPg(pool);
-    
-    const client = new PrismaClient({
-      adapter,
-      log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-    });
-
-    console.log('[Prisma] Client created successfully');
-    return client;
-  } catch (error) {
-    console.error('[Prisma] Failed to create client:', error);
-    throw error;
-  }
+  return client;
 }
 
 export function getPrismaClient(): PrismaClient {
