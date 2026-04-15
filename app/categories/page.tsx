@@ -34,15 +34,35 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export default async function CategoriesPage() {
-  const prisma = getPrismaClient();
-  const categories = await prisma.category.findMany({
-    include: {
-      _count: {
-        select: { companies: true },
+  let categories: any[] = [];
+  let error: string | null = null;
+  
+  try {
+    const prisma = getPrismaClient();
+    categories = await prisma.category.findMany({
+      include: {
+        _count: {
+          select: { companies: true },
+        },
       },
-    },
-    orderBy: { order: "asc" },
-  });
+      orderBy: { order: "asc" },
+    });
+  } catch (e: any) {
+    console.error('[Categories] Error fetching categories:', e);
+    error = e.message || 'Unknown error';
+  }
+
+  if (error) {
+    return (
+      <div className="container py-12">
+        <h1 className="text-3xl font-bold mb-4">Erreur</h1>
+        <p className="text-red-600">{error}</p>
+        <pre className="mt-4 p-4 bg-gray-100 rounded text-sm overflow-auto">
+          {JSON.stringify({ env: Object.keys(process.env).filter(k => k.includes('DATABASE')) }, null, 2)}
+        </pre>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-12">
