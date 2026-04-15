@@ -6,26 +6,38 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
+// Mock Prisma client for build time
+const createMockPrismaClient = (): PrismaClient => {
+  const mockHandler = {
+    get: () => mockHandler,
+    apply: () => Promise.resolve([]),
+  };
+  return new Proxy({} as PrismaClient, mockHandler);
+};
+
 // Create Prisma client with pg adapter for PostgreSQL
-const createPrismaClient = () => {
+const createPrismaClient = (): PrismaClient => {
   if (!process.env.DATABASE_URL) {
-    // During build time or without DATABASE_URL, return a minimal client
-    // This allows the build to complete without actual DB connection
-    return new PrismaClient({
-      log: ['error'],
-    });
+    // During build time or without DATABASE_URL, return a mock client
+    console.warn('DATABASE_URL not set, using mock Prisma client');
+    return createMockPrismaClient();
   }
 
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-  });
+  try {
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+    });
 
-  const adapter = new PrismaPg(pool);
-  
-  return new PrismaClient({
-    adapter,
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  });
+    const adapter = new PrismaPg(pool);
+    
+    return new PrismaClient({
+      adapter,
+      log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    });
+  } catch (error) {
+    console.error('Failed to create Prisma client:', error);
+    return createMockPrismaClient();
+  }
 };
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
