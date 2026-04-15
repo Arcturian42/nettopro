@@ -1,7 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 
 const globalForPrismaAuth = globalThis as unknown as {
   prismaAuth: PrismaClient | undefined;
@@ -12,15 +11,28 @@ function getPrismaClient(): PrismaClient {
     return globalForPrismaAuth.prismaAuth;
   }
   
-  const client = new PrismaClient();
+  // Dynamic import to avoid build-time initialization
+  const { PrismaClient: PrismaClientCtor } = require("@prisma/client");
+  const client = new PrismaClientCtor();
+  
   if (process.env.NODE_ENV !== "production") {
     globalForPrismaAuth.prismaAuth = client;
   }
   return client;
 }
 
+function getAdapter() {
+  try {
+    const { PrismaAdapter } = require("@next-auth/prisma-adapter");
+    return PrismaAdapter(getPrismaClient());
+  } catch (error) {
+    console.error("Failed to initialize PrismaAdapter:", error);
+    return undefined;
+  }
+}
+
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(getPrismaClient()),
+  adapter: getAdapter(),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
