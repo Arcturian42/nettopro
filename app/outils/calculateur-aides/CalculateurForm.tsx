@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, ArrowRight, Home, Building2, CheckCircle2, Calculator, Euro, Leaf } from "lucide-react";
 
 const steps = [
@@ -189,40 +187,50 @@ export default function CalculateurForm() {
             <div className="space-y-6">
               <div>
                 <Label className="mb-3 block">Type de logement</Label>
-                <RadioGroup value={formData.housingType} onValueChange={(value) => updateData("housingType", value)} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <RadioGroupItem value="house" id="house" className="peer sr-only" />
-                    <Label htmlFor="house" className="flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 hover:bg-muted">
-                      <Home className="w-8 h-8 mb-2 text-muted-foreground" />
-                      <span className="font-medium">Maison</span>
-                    </Label>
-                  </div>
-                  <div>
-                    <RadioGroupItem value="apartment" id="apartment" className="peer sr-only" />
-                    <Label htmlFor="apartment" className="flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 hover:bg-muted">
-                      <Building2 className="w-8 h-8 mb-2 text-muted-foreground" />
-                      <span className="font-medium">Appartement</span>
-                    </Label>
-                  </div>
-                </RadioGroup>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={() => updateData("housingType", "house")}
+                    className={`flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all hover:bg-muted ${
+                      formData.housingType === "house" ? "border-primary bg-primary/5" : ""
+                    }`}
+                  >
+                    <Home className="w-8 h-8 mb-2 text-muted-foreground" />
+                    <span className="font-medium">Maison</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => updateData("housingType", "apartment")}
+                    className={`flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all hover:bg-muted ${
+                      formData.housingType === "apartment" ? "border-primary bg-primary/5" : ""
+                    }`}
+                  >
+                    <Building2 className="w-8 h-8 mb-2 text-muted-foreground" />
+                    <span className="font-medium">Appartement</span>
+                  </button>
+                </div>
               </div>
 
               <div>
                 <Label className="mb-3 block">Tranche de revenus</Label>
-                <RadioGroup value={formData.incomeBracket} onValueChange={(value) => updateData("incomeBracket", value)} className="space-y-3">
+                <div className="space-y-3">
                   {incomeBrackets.map((bracket) => (
-                    <div key={bracket.value}>
-                      <RadioGroupItem value={bracket.value} id={bracket.value} className="peer sr-only" />
-                      <Label htmlFor={bracket.value} className="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 hover:bg-muted">
-                        <div className={`w-4 h-4 rounded-full mr-3 ${bracket.value === "blue" ? "bg-blue-500" : bracket.value === "yellow" ? "bg-yellow-500" : "bg-purple-500"}`} />
-                        <div>
-                          <span className="font-medium block">{bracket.label}</span>
-                          <span className="text-sm text-muted-foreground">{bracket.desc}</span>
-                        </div>
-                      </Label>
-                    </div>
+                    <button
+                      key={bracket.value}
+                      type="button"
+                      onClick={() => updateData("incomeBracket", bracket.value)}
+                      className={`flex items-center w-full p-4 border-2 rounded-lg cursor-pointer transition-all hover:bg-muted ${
+                        formData.incomeBracket === bracket.value ? "border-primary bg-primary/5" : ""
+                      }`}
+                    >
+                      <div className={`w-4 h-4 rounded-full mr-3 ${bracket.value === "blue" ? "bg-blue-500" : bracket.value === "yellow" ? "bg-yellow-500" : "bg-purple-500"}`} />
+                      <div className="text-left">
+                        <span className="font-medium block">{bracket.label}</span>
+                        <span className="text-sm text-muted-foreground">{bracket.desc}</span>
+                      </div>
+                    </button>
                   ))}
-                </RadioGroup>
+                </div>
               </div>
 
               <div>
@@ -236,16 +244,31 @@ export default function CalculateurForm() {
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-3">
                 {travauxOptions.map((option) => (
-                  <div key={option.id} className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                    <Checkbox id={option.id} checked={formData.travaux.includes(option.id)} onCheckedChange={() => toggleTravaux(option.id)} />
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => toggleTravaux(option.id)}
+                    className={`flex items-start space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors text-left ${
+                      formData.travaux.includes(option.id) ? "border-primary bg-primary/5" : ""
+                    }`}
+                  >
+                    <div className={`w-5 h-5 rounded border flex items-center justify-center mt-0.5 ${
+                      formData.travaux.includes(option.id) ? "bg-primary border-primary" : "border-input"
+                    }`}>
+                      {formData.travaux.includes(option.id) && (
+                        <svg className="w-3 h-3 text-primary-foreground" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
                     <div className="flex-1">
-                      <Label htmlFor={option.id} className="cursor-pointer font-medium block">{option.label}</Label>
+                      <span className="font-medium block">{option.label}</span>
                       <div className="flex gap-2 mt-1">
                         {option.primeRenov && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Prime R\u00e9nov&apos;</span>}
                         {option.cee && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">CEE</span>}
                       </div>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -305,11 +328,20 @@ export default function CalculateurForm() {
 
       {/* Navigation */}
       <div className="flex justify-between mt-6">
-        <Button variant="outline" onClick={handleBack} disabled={currentStep === 1}>Retour</Button>
+        <Button variant="outline" onClick={handleBack} disabled={currentStep === 1}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Retour
+        </Button>
         {currentStep < 3 ? (
-          <Button onClick={handleNext} disabled={!canProceed()}>Continuer <ArrowRight className="ml-2 h-4 w-4" /></Button>
+          <Button onClick={handleNext} disabled={!canProceed()}>
+            Continuer
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
         ) : (
-          <Button disabled={!canProceed()}><CheckCircle2 className="mr-2 h-4 w-4" />Recevoir mon estimation</Button>
+          <Button disabled={!canProceed()}>
+            <CheckCircle2 className="mr-2 h-4 w-4" />
+            Recevoir mon estimation
+          </Button>
         )}
       </div>
     </>

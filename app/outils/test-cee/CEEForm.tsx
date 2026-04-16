@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, ArrowRight, Building2, Factory, Store, CheckCircle2, Leaf } from "lucide-react";
 
 const steps = [
@@ -128,7 +126,7 @@ export default function CEEForm() {
       case 2:
         return formData.economies.length > 0 && !!formData.surface;
       case 3:
-        return !!formData.email;
+        return true;
       default:
         return false;
     }
@@ -175,68 +173,68 @@ export default function CEEForm() {
         </CardHeader>
         <CardContent>
           {currentStep === 1 && (
-            <RadioGroup
-              value={formData.activityType}
-              onValueChange={(value) => updateData("activityType", value)}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-4"
-            >
-              {[
-                { value: "tertiaire", label: "Bureaux / Tertiaire", icon: Building2 },
-                { value: "commerce", label: "Commerce / Retail", icon: Store },
-                { value: "industrie", label: "Industrie", icon: Factory },
-              ].map((type) => {
-                const Icon = type.icon;
-                return (
-                  <div key={type.value}>
-                    <RadioGroupItem
-                      value={type.value}
-                      id={type.value}
-                      className="peer sr-only"
-                    />
-                    <Label
-                      htmlFor={type.value}
-                      className="flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 hover:bg-muted"
-                    >
-                      <Icon className="w-8 h-8 mb-2 text-muted-foreground" />
-                      <span className="font-medium text-center">{type.label}</span>
-                    </Label>
-                  </div>
-                );
-              })}
-            </RadioGroup>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <button
+                type="button"
+                onClick={() => updateData("activityType", "bureau")}
+                className={`flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all hover:bg-muted ${
+                  formData.activityType === "bureau" ? "border-primary bg-primary/5" : ""
+                }`}
+              >
+                <Building2 className="w-8 h-8 mb-2 text-muted-foreground" />
+                <span className="font-medium">Bureaux</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => updateData("activityType", "commerce")}
+                className={`flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all hover:bg-muted ${
+                  formData.activityType === "commerce" ? "border-primary bg-primary/5" : ""
+                }`}
+              >
+                <Store className="w-8 h-8 mb-2 text-muted-foreground" />
+                <span className="font-medium">Commerce</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => updateData("activityType", "industrie")}
+                className={`flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all hover:bg-muted ${
+                  formData.activityType === "industrie" ? "border-primary bg-primary/5" : ""
+                }`}
+              >
+                <Factory className="w-8 h-8 mb-2 text-muted-foreground" />
+                <span className="font-medium">Industrie</span>
+              </button>
+            </div>
           )}
 
           {currentStep === 2 && (
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-3">
-                {economieOptions.map((option) => (
-                  <div
-                    key={option.id}
-                    className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                {economieOptions.map((economie) => (
+                  <button
+                    key={economie.id}
+                    type="button"
+                    onClick={() => toggleEconomie(economie.id)}
+                    className={`flex items-start space-x-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors text-left ${
+                      formData.economies.includes(economie.id) ? "border-primary bg-primary/5" : ""
+                    }`}
                   >
-                    <Checkbox
-                      id={option.id}
-                      checked={formData.economies.includes(option.id)}
-                      onCheckedChange={() => toggleEconomie(option.id)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <div className="flex-1">
-                      <Label
-                        htmlFor={option.id}
-                        className="cursor-pointer font-medium block"
-                      >
-                        {option.label}
-                      </Label>
-                      <span className="text-sm text-muted-foreground">
-                        Économie estimée: variable selon surface
-                      </span>
+                    <div className={`w-5 h-5 rounded border flex items-center justify-center mt-0.5 ${
+                      formData.economies.includes(economie.id) ? "bg-primary border-primary" : "border-input"
+                    }`}>
+                      {formData.economies.includes(economie.id) && (
+                        <svg className="w-3 h-3 text-primary-foreground" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
                     </div>
-                  </div>
+                    <span className="flex-1 font-normal">{economie.label}</span>
+                  </button>
                 ))}
               </div>
-              <div className="grid grid-cols-2 gap-4 pt-4">
+              <div className="pt-4 space-y-4">
                 <div>
-                  <Label htmlFor="surface">Surface (m²) *</Label>
+                  <Label htmlFor="surface">Surface (m²)</Label>
                   <Input
                     id="surface"
                     type="text"
@@ -244,17 +242,19 @@ export default function CEEForm() {
                     placeholder="Ex: 500"
                     value={formData.surface}
                     onChange={(e) => updateData("surface", e.target.value)}
+                    className="mt-1"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="consumption">Conso annuelle (MWh)</Label>
+                  <Label htmlFor="consumption">Consommation annuelle estimée (kWh)</Label>
                   <Input
                     id="consumption"
                     type="text"
                     inputMode="numeric"
-                    placeholder="Ex: 200"
+                    placeholder="Ex: 50000"
                     value={formData.annualConsumption}
                     onChange={(e) => updateData("annualConsumption", e.target.value)}
+                    className="mt-1"
                   />
                 </div>
               </div>
@@ -263,68 +263,55 @@ export default function CEEForm() {
 
           {currentStep === 3 && result && (
             <div className="space-y-6">
-              <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-6 text-center">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
                 <Leaf className="w-12 h-12 mx-auto mb-4 text-green-600" />
-                <h3 className="text-lg font-medium text-muted-foreground mb-2">
-                  Valeur estimée de vos CEE
+                <h3 className="text-lg font-medium text-green-700 mb-2">
+                  Valeur de vos CEE estimée
                 </h3>
                 <p className="text-4xl font-bold text-green-600 mb-2">
                   {result.total.toLocaleString("fr-FR", { maximumFractionDigits: 0 })}€
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  Pour {result.kwhEconomy.toLocaleString("fr-FR", { maximumFractionDigits: 0 })} kWh économisés/an
+                <p className="text-sm text-green-600">
+                  Pour {result.kwhEconomy.toLocaleString("fr-FR")} kWh économisés/an
                 </p>
               </div>
 
               <div className="space-y-2">
-                <h4 className="font-medium">Détail par opération :</h4>
-                {result.details.map((detail, i) => (
+                <h4 className="font-medium">Détail par mesure :</h4>
+                {result.details.map((detail, idx) => (
                   <div
-                    key={i}
+                    key={idx}
                     className="flex justify-between items-center p-3 bg-muted rounded-lg"
                   >
-                    <span className="text-sm">{detail.label}</span>
-                    <div className="text-right">
-                      <span className="font-medium block">
-                        {detail.value.toLocaleString("fr-FR", { maximumFractionDigits: 0 })}€
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {detail.kwh.toLocaleString("fr-FR", { maximumFractionDigits: 0 })} kWh
-                      </span>
-                    </div>
+                    <span>{detail.label}</span>
+                    <span className="font-medium">
+                      {detail.value.toLocaleString("fr-FR", { maximumFractionDigits: 0 })}€
+                    </span>
                   </div>
                 ))}
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <p className="text-sm text-amber-800">
-                  <strong>Note :</strong> Cette estimation est indicative. Le montant réel dépend 
-                  des opérations standardisées (CEE-OS) éligibles et des cours du marché CEE.
-                  Contactez un professionnel pour une étude personnalisée.
-                </p>
-              </div>
-
               <div className="border-t pt-6 space-y-4">
                 <p className="text-sm text-muted-foreground text-center">
-                  Recevez une étude complète par email :
+                  Recevez une offre personnalisée pour la cession de vos CEE :
                 </p>
                 <div>
-                  <Label htmlFor="companyName">Nom de l&apos;entreprise</Label>
+                  <Label htmlFor="companyName">Nom de l'entreprise</Label>
                   <Input
                     id="companyName"
                     value={formData.companyName}
                     onChange={(e) => updateData("companyName", e.target.value)}
-                    placeholder="Mon Entreprise SAS"
+                    placeholder="Ma Société SARL"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="email">Email professionnel *</Label>
+                  <Label htmlFor="email">Email *</Label>
                   <Input
                     id="email"
                     type="email"
                     value={formData.email}
                     onChange={(e) => updateData("email", e.target.value)}
-                    placeholder="contact@entreprise.fr"
+                    placeholder="contact@entreprise.com"
                     required
                   />
                 </div>
@@ -352,7 +339,7 @@ export default function CEEForm() {
         ) : (
           <Button disabled={!canProceed()}>
             <CheckCircle2 className="mr-2 h-4 w-4" />
-            Recevoir mon étude
+            Recevoir mon offre
           </Button>
         )}
       </div>

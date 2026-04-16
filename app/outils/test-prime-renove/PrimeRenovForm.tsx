@@ -1,51 +1,47 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, ArrowRight, Home, Building2, CheckCircle2, Calculator } from "lucide-react";
 
 const steps = [
-  { id: 1, title: "Type de logement", description: "S\u00e9lectionnez votre type de bien" },
-  { id: 2, title: "Revenus", description: "D\u00e9terminez votre tranche de revenus" },
-  { id: 3, title: "Travaux", description: "S\u00e9lectionnez les travaux envisag\u00e9s" },
-  { id: 4, title: "Coordonn\u00e9es", description: "Recevez votre estimation" },
+  { id: 1, title: "Type de logement", description: "Sélectionnez votre type de bien" },
+  { id: 2, title: "Revenus", description: "Déterminez votre tranche de revenus" },
+  { id: 3, title: "Travaux", description: "Sélectionnez les travaux envisagés" },
+  { id: 4, title: "Coordonnées", description: "Recevez votre estimation" },
 ];
 
 const travauxOptions = [
   { id: "isolation-murs", label: "Isolation des murs", aidable: true },
   { id: "isolation-combles", label: "Isolation des combles", aidable: true },
   { id: "isolation-sous-sol", label: "Isolation du sous-sol", aidable: true },
-  { id: "pompe-chaleur", label: "Pompe \u00e0 chaleur", aidable: true },
-  { id: "chaudiere", label: "Chaudi\u00e8re \u00e0 condensation", aidable: true },
-  { id: "poele-buche", label: "Po\u00eale \u00e0 b\u00fbches", aidable: true },
-  { id: "poele-granules", label: "Po\u00eale \u00e0 granul\u00e9s", aidable: true },
+  { id: "pompe-chaleur", label: "Pompe à chaleur", aidable: true },
+  { id: "chaudiere", label: "Chaudière à condensation", aidable: true },
+  { id: "poele-buche", label: "Poêle à bûches", aidable: true },
+  { id: "poele-granules", label: "Poêle à granulés", aidable: true },
   { id: "vmc", label: "VMC double flux", aidable: true },
-  { id: "menuiserie", label: "Menuiserie (fen\u00eatres/portes)", aidable: true },
-  { id: "audit", label: "Audit \u00e9nerg\u00e9tique", aidable: true },
+  { id: "menuiserie", label: "Menuiserie (fenêtres/portes)", aidable: true },
+  { id: "audit", label: "Audit énergétique", aidable: true },
 ];
 
-// Bar\u00e8mes 2025 (exemple)
+// Barèmes 2025 (exemple)
 const BAREMES: Record<string, { blue: number; yellow: number; purple: number; unit: string }> = {
-  "isolation-murs": { blue: 75, yellow: 100, purple: 120, unit: "\u20ac/m\u00b2" },
-  "isolation-combles": { blue: 30, yellow: 35, purple: 40, unit: "\u20ac/m\u00b2" },
-  "isolation-sous-sol": { blue: 25, yellow: 30, purple: 35, unit: "\u20ac/m\u00b2" },
-  "pompe-chaleur": { blue: 4000, yellow: 5000, purple: 7000, unit: "\u20ac" },
-  "chaudiere": { blue: 1200, yellow: 1600, purple: 2000, unit: "\u20ac" },
-  "poele-buche": { blue: 800, yellow: 1100, purple: 1500, unit: "\u20ac" },
-  "poele-granules": { blue: 1000, yellow: 1400, purple: 2000, unit: "\u20ac" },
-  "vmc": { blue: 2000, yellow: 2500, purple: 3000, unit: "\u20ac" },
-  "menuiserie": { blue: 100, yellow: 130, purple: 160, unit: "\u20ac/m\u00b2" },
-  "audit": { blue: 300, yellow: 400, purple: 500, unit: "\u20ac" },
+  "isolation-murs": { blue: 75, yellow: 100, purple: 120, unit: "€/m²" },
+  "isolation-combles": { blue: 30, yellow: 35, purple: 40, unit: "€/m²" },
+  "isolation-sous-sol": { blue: 25, yellow: 30, purple: 35, unit: "€/m²" },
+  "pompe-chaleur": { blue: 4000, yellow: 5000, purple: 7000, unit: "€" },
+  "chaudiere": { blue: 1200, yellow: 1600, purple: 2000, unit: "€" },
+  "poele-buche": { blue: 800, yellow: 1100, purple: 1500, unit: "€" },
+  "poele-granules": { blue: 1000, yellow: 1400, purple: 2000, unit: "€" },
+  "vmc": { blue: 2000, yellow: 2500, purple: 3000, unit: "€" },
+  "menuiserie": { blue: 100, yellow: 130, purple: 160, unit: "€/m²" },
+  "audit": { blue: 300, yellow: 400, purple: 500, unit: "€" },
 };
 
 export default function PrimeRenovForm() {
-  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     housingType: "",
@@ -180,107 +176,90 @@ export default function PrimeRenovForm() {
         </CardHeader>
         <CardContent>
           {currentStep === 1 && (
-            <RadioGroup
-              value={formData.housingType}
-              onValueChange={(value) => updateData("housingType", value)}
-              className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-            >
-              <div>
-                <RadioGroupItem
-                  value="house"
-                  id="house"
-                  className="peer sr-only"
-                />
-                <Label
-                  htmlFor="house"
-                  className="flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 hover:bg-muted"
-                >
-                  <Home className="w-8 h-8 mb-2 text-muted-foreground" />
-                  <span className="font-medium">Maison</span>
-                </Label>
-              </div>
-              <div>
-                <RadioGroupItem
-                  value="apartment"
-                  id="apartment"
-                  className="peer sr-only"
-                />
-                <Label
-                  htmlFor="apartment"
-                  className="flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 hover:bg-muted"
-                >
-                  <Building2 className="w-8 h-8 mb-2 text-muted-foreground" />
-                  <span className="font-medium">Appartement</span>
-                </Label>
-              </div>
-            </RadioGroup>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button
+                type="button"
+                onClick={() => updateData("housingType", "house")}
+                className={`flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all hover:bg-muted ${
+                  formData.housingType === "house" ? "border-primary bg-primary/5" : ""
+                }`}
+              >
+                <Home className="w-8 h-8 mb-2 text-muted-foreground" />
+                <span className="font-medium">Maison</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => updateData("housingType", "apartment")}
+                className={`flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all hover:bg-muted ${
+                  formData.housingType === "apartment" ? "border-primary bg-primary/5" : ""
+                }`}
+              >
+                <Building2 className="w-8 h-8 mb-2 text-muted-foreground" />
+                <span className="font-medium">Appartement</span>
+              </button>
+            </div>
           )}
 
           {currentStep === 2 && (
-            <RadioGroup
-              value={formData.incomeBracket}
-              onValueChange={(value) => updateData("incomeBracket", value)}
-              className="space-y-3"
-            >
+            <div className="space-y-3">
               {[
-                { value: "blue", label: "Tr\u00e8s modestes (bleu)", desc: "Jusqu'\u00e0 20 000\u20ac/an" },
-                { value: "yellow", label: "Modestes (jaune)", desc: "20 000\u20ac - 35 000\u20ac/an" },
-                { value: "purple", label: "Interm\u00e9diaires (violet)", desc: "35 000\u20ac - 50 000\u20ac/an" },
+                { value: "blue", label: "Très modestes (bleu)", desc: "Jusqu'à 20 000€/an" },
+                { value: "yellow", label: "Modestes (jaune)", desc: "20 000€ - 35 000€/an" },
+                { value: "purple", label: "Intermédiaires (violet)", desc: "35 000€ - 50 000€/an" },
               ].map((bracket) => (
-                <div key={bracket.value}>
-                  <RadioGroupItem
-                    value={bracket.value}
-                    id={bracket.value}
-                    className="peer sr-only"
+                <button
+                  key={bracket.value}
+                  type="button"
+                  onClick={() => updateData("incomeBracket", bracket.value)}
+                  className={`flex items-center w-full p-4 border-2 rounded-lg cursor-pointer transition-all hover:bg-muted ${
+                    formData.incomeBracket === bracket.value ? "border-primary bg-primary/5" : ""
+                  }`}
+                >
+                  <div
+                    className={`w-4 h-4 rounded-full mr-3 ${
+                      bracket.value === "blue"
+                        ? "bg-blue-500"
+                        : bracket.value === "yellow"
+                        ? "bg-yellow-500"
+                        : "bg-purple-500"
+                    }`}
                   />
-                  <Label
-                    htmlFor={bracket.value}
-                    className="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 hover:bg-muted"
-                  >
-                    <div
-                      className={`w-4 h-4 rounded-full mr-3 ${
-                        bracket.value === "blue"
-                          ? "bg-blue-500"
-                          : bracket.value === "yellow"
-                          ? "bg-yellow-500"
-                          : "bg-purple-500"
-                      }`}
-                    />
-                    <div>
-                      <span className="font-medium block">{bracket.label}</span>
-                      <span className="text-sm text-muted-foreground">{bracket.desc}</span>
-                    </div>
-                  </Label>
-                </div>
+                  <div className="text-left">
+                    <span className="font-medium block">{bracket.label}</span>
+                    <span className="text-sm text-muted-foreground">{bracket.desc}</span>
+                  </div>
+                </button>
               ))}
-            </RadioGroup>
+            </div>
           )}
 
           {currentStep === 3 && (
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {travauxOptions.map((travaux) => (
-                  <div
+                  <button
                     key={travaux.id}
-                    className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                    type="button"
+                    onClick={() => toggleTravaux(travaux.id)}
+                    className={`flex items-start space-x-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors text-left ${
+                      formData.travaux.includes(travaux.id) ? "border-primary bg-primary/5" : ""
+                    }`}
                   >
-                    <Checkbox
-                      id={travaux.id}
-                      checked={formData.travaux.includes(travaux.id)}
-                      onCheckedChange={() => toggleTravaux(travaux.id)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <Label
-                      htmlFor={travaux.id}
-                      className="flex-1 cursor-pointer font-normal"
-                    >
-                      {travaux.label}
-                    </Label>
-                  </div>
+                    <div className={`w-5 h-5 rounded border flex items-center justify-center mt-0.5 ${
+                      formData.travaux.includes(travaux.id) ? "bg-primary border-primary" : "border-input"
+                    }`}>
+                      {formData.travaux.includes(travaux.id) && (
+                        <svg className="w-3 h-3 text-primary-foreground" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                    <span className="flex-1 font-normal">{travaux.label}</span>
+                  </button>
                 ))}
               </div>
               <div className="pt-4">
-                <Label htmlFor="surface">Surface approximative (m\u00b2)</Label>
+                <Label htmlFor="surface">Surface approximative (m²)</Label>
                 <Input
                   id="surface"
                   type="text"
@@ -302,15 +281,15 @@ export default function PrimeRenovForm() {
                   Estimation totale des aides
                 </h3>
                 <p className="text-4xl font-bold text-primary mb-2">
-                  {result.total.toLocaleString("fr-FR")}\u20ac
+                  {result.total.toLocaleString("fr-FR")}€
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Pour la tranche {result.bracket === "blue" ? "tr\u00e8s modestes" : result.bracket === "yellow" ? "modestes" : "interm\u00e9diaires"}
+                  Pour la tranche {result.bracket === "blue" ? "très modestes" : result.bracket === "yellow" ? "modestes" : "intermédiaires"}
                 </p>
               </div>
 
               <div className="space-y-2">
-                <h4 className="font-medium">D\u00e9tail par travaux :</h4>
+                <h4 className="font-medium">Détail par travaux :</h4>
                 {result.details.map((detail) => (
                   <div
                     key={detail.work}
@@ -318,7 +297,7 @@ export default function PrimeRenovForm() {
                   >
                     <span>{detail.label}</span>
                     <span className="font-medium">
-                      {detail.amount.toLocaleString("fr-FR")}\u20ac
+                      {detail.amount.toLocaleString("fr-FR")}€
                     </span>
                   </div>
                 ))}
@@ -326,11 +305,11 @@ export default function PrimeRenovForm() {
 
               <div className="border-t pt-6 space-y-4">
                 <p className="text-sm text-muted-foreground text-center">
-                  Pour recevoir une estimation d\u00e9taill\u00e9e par email, remplissez vos coordonn\u00e9es :
+                  Pour recevoir une estimation détaillée par email, remplissez vos coordonnées :
                 </p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="firstName">Pr\u00e9nom</Label>
+                    <Label htmlFor="firstName">Prénom</Label>
                     <Input
                       id="firstName"
                       value={formData.firstName}
@@ -360,7 +339,7 @@ export default function PrimeRenovForm() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="phone">T\u00e9l\u00e9phone</Label>
+                  <Label htmlFor="phone">Téléphone</Label>
                   <Input
                     id="phone"
                     type="tel"
