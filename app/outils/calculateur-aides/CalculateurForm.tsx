@@ -9,26 +9,26 @@ import { ArrowLeft, ArrowRight, Home, Building2, CheckCircle2, Calculator, Euro,
 
 const steps = [
   { id: 1, title: "Votre profil", description: "Type de logement et revenus" },
-  { id: 2, title: "Travaux", description: "S\u00e9lectionnez vos projets" },
-  { id: 3, title: "R\u00e9sultat", description: "Estimation compl\u00e8te" },
+  { id: 2, title: "Travaux", description: "Selectionnez vos projets" },
+  { id: 3, title: "Resultat", description: "Estimation complete" },
 ];
 
 const travauxOptions = [
   { id: "isolation-murs", label: "Isolation des murs", primeRenov: true, cee: true },
   { id: "isolation-combles", label: "Isolation des combles", primeRenov: true, cee: true },
-  { id: "pompe-chaleur", label: "Pompe \u00e0 chaleur", primeRenov: true, cee: true },
-  { id: "chaudiere", label: "Chaudi\u00e8re \u00e0 condensation", primeRenov: true, cee: false },
-  { id: "poele-granules", label: "Po\u00eale \u00e0 granul\u00e9s", primeRenov: true, cee: false },
+  { id: "pompe-chaleur", label: "Pompe a chaleur", primeRenov: true, cee: true },
+  { id: "chaudiere", label: "Chaudiere a condensation", primeRenov: true, cee: false },
+  { id: "poele-granules", label: "Poele a granules", primeRenov: true, cee: false },
   { id: "vmc", label: "VMC double flux", primeRenov: true, cee: true },
-  { id: "menuiserie", label: "Menuiserie (fen\u00eatres/portes)", primeRenov: true, cee: false },
-  { id: "eclairage-led", label: "Remplacement \u00e9clairage LED", primeRenov: false, cee: true },
-  { id: "enr", label: "\u00c9nergies renouvelables", primeRenov: false, cee: true },
+  { id: "menuiserie", label: "Menuiserie (fenetres/portes)", primeRenov: true, cee: false },
+  { id: "eclairage-led", label: "Remplacement eclairage LED", primeRenov: false, cee: true },
+  { id: "enr", label: "Energies renouvelables", primeRenov: false, cee: true },
 ];
 
 const incomeBrackets = [
-  { value: "blue", label: "Tr\u00e8s modestes (bleu)", desc: "Jusqu'\u00e0 20 000\u20ac/an", multiplier: 1.2 },
-  { value: "yellow", label: "Modestes (jaune)", desc: "20 000\u20ac - 35 000\u20ac/an", multiplier: 1.0 },
-  { value: "purple", label: "Interm\u00e9diaires (violet)", desc: "35 000\u20ac - 50 000\u20ac/an", multiplier: 0.8 },
+  { value: "blue", label: "Tres modestes (bleu)", desc: "Jusqu'a 20 000E/an", multiplier: 1.2 },
+  { value: "yellow", label: "Modestes (jaune)", desc: "20 000E - 35 000E/an", multiplier: 1.0 },
+  { value: "purple", label: "Intermediaires (violet)", desc: "35 000E - 50 000E/an", multiplier: 0.8 },
 ];
 
 const CEE_RATE = 0.015;
@@ -234,7 +234,7 @@ export default function CalculateurForm() {
               </div>
 
               <div>
-                <Label htmlFor="surface">Surface (m\u00b2)</Label>
+                <Label htmlFor="surface">Surface (m2)</Label>
                 <Input id="surface" type="text" inputMode="numeric" placeholder="Ex: 100" value={formData.surface} onChange={(e) => updateData("surface", e.target.value)} />
               </div>
             </div>
@@ -264,7 +264,7 @@ export default function CalculateurForm() {
                     <div className="flex-1">
                       <span className="font-medium block">{option.label}</span>
                       <div className="flex gap-2 mt-1">
-                        {option.primeRenov && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Prime R\u00e9nov&apos;</span>}
+                        {option.primeRenov && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Prime Renov</span>}
                         {option.cee && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">CEE</span>}
                       </div>
                     </div>
@@ -279,36 +279,36 @@ export default function CalculateurForm() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-4 text-center">
                   <Calculator className="w-8 h-8 mx-auto mb-2 text-blue-600" />
-                  <p className="text-sm text-muted-foreground">Prime R\u00e9nov&apos;</p>
-                  <p className="text-2xl font-bold text-blue-600">{result.primeRenov.toLocaleString("fr-FR", { maximumFractionDigits: 0 })}€</p>
+                  <p className="text-sm text-muted-foreground">Prime Renov</p>
+                  <p className="text-2xl font-bold text-blue-600">{Math.round(result.primeRenov).toLocaleString("fr-FR")}E</p>
                 </div>
                 <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-4 text-center">
                   <Leaf className="w-8 h-8 mx-auto mb-2 text-green-600" />
                   <p className="text-sm text-muted-foreground">CEE</p>
-                  <p className="text-2xl font-bold text-green-600">{result.cee.toLocaleString("fr-FR", { maximumFractionDigits: 0 })}€</p>
+                  <p className="text-2xl font-bold text-green-600">{Math.round(result.cee).toLocaleString("fr-FR")}E</p>
                 </div>
                 <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-center">
                   <Euro className="w-8 h-8 mx-auto mb-2 text-primary" />
-                  <p className="text-sm text-muted-foreground">Total estim\u00e9</p>
-                  <p className="text-2xl font-bold text-primary">{result.total.toLocaleString("fr-FR", { maximumFractionDigits: 0 })}€</p>
+                  <p className="text-sm text-muted-foreground">Total estime</p>
+                  <p className="text-2xl font-bold text-primary">{Math.round(result.total).toLocaleString("fr-FR")}E</p>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <h4 className="font-medium">D\u00e9tail par travaux :</h4>
+                <h4 className="font-medium">Detail par travaux :</h4>
                 {result.details.map((detail, i) => (
                   <div key={i} className="flex justify-between items-center p-3 bg-muted rounded-lg">
                     <span className="text-sm">{detail.label}</span>
-                    <span className="font-medium">{detail.total.toLocaleString("fr-FR", { maximumFractionDigits: 0 })}€</span>
+                    <span className="font-medium">{Math.round(detail.total).toLocaleString("fr-FR")}E</span>
                   </div>
                 ))}
               </div>
 
               <div className="border-t pt-6 space-y-4">
-                <p className="text-sm text-muted-foreground text-center">Recevez le d\u00e9tail complet par email :</p>
+                <p className="text-sm text-muted-foreground text-center">Recevez le detail complet par email :</p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="firstName">Pr\u00e9nom</Label>
+                    <Label htmlFor="firstName">Prenom</Label>
                     <Input id="firstName" value={formData.firstName} onChange={(e) => updateData("firstName", e.target.value)} placeholder="Jean" />
                   </div>
                   <div>
